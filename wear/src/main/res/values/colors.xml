@@ -1,0 +1,10 @@
+<resources>
+    <color name="relaxed_green">#4CAF50</color>
+    <color name="moderate_yellow">#FFEB3B</color>
+    <color name="stressed_red">#F44336</color>
+
+    <color name="primary_text">#FFFFFF</color>
+    <color name="card_background">#1E1E1E</color>
+
+    <color name="stress_background">#2F4F4F</color>
+</resources>
