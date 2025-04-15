@@ -1,16 +1,21 @@
 package com.example.wear.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.activity.ComponentActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.wear.R;
+import com.example.wear.sync.WaterSyncSender;
+import com.example.wear.viewmodel.WaterViewModel;
 
-public class WaterActivity extends Activity {
+public class WaterActivity extends ComponentActivity {
 
-    private int waterIntake = 0;
     private TextView waterText;
+    private WaterViewModel waterViewModel;
+    private final int GOAL = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,15 +23,27 @@ public class WaterActivity extends Activity {
         setContentView(R.layout.activity_water);
 
         waterText = findViewById(R.id.water_total);
-        Button add250 = findViewById(R.id.btn_add_250);
-        Button add500 = findViewById(R.id.btn_add_500);
+        Button btn250 = findViewById(R.id.btn_add_250);
+        Button btn500 = findViewById(R.id.btn_add_500);
 
-        add250.setOnClickListener(v -> updateWater(250));
-        add500.setOnClickListener(v -> updateWater(500));
-    }
+        waterViewModel = new ViewModelProvider(
+                this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                .get(WaterViewModel.class);
 
-    private void updateWater(int ml) {
-        waterIntake += ml;
-        waterText.setText(waterIntake + " ml / 2000 ml");
+        waterViewModel.getWaterIntake().observe(this, ml -> {
+            waterText.setText(ml + " ml / " + GOAL + " ml");
+        });
+
+        btn250.setOnClickListener(v -> {
+            waterViewModel.addWater(250);
+            WaterSyncSender.sendWaterData(this, waterViewModel.getWaterIntake().getValue());
+            finish();
+        });
+
+        btn500.setOnClickListener(v -> {
+            waterViewModel.addWater(500);
+            WaterSyncSender.sendWaterData(this, waterViewModel.getWaterIntake().getValue());
+            finish();
+        });
     }
 }

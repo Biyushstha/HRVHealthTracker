@@ -41,4 +41,8 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.wear)
+    implementation (libs.lifecycle.viewmodel)
+    implementation (libs.lifecycle.livedata)
+
+    implementation(libs.play.services.wearable)
 }

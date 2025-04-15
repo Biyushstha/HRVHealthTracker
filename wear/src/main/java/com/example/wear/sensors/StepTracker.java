@@ -10,7 +10,11 @@ public class StepTracker implements SensorEventListener {
 
     private final SensorManager sensorManager;
     private final Sensor stepSensor;
-    private final StepListener listener;
+    private StepListener listener;
+
+    public interface StepListener {
+        void onStepChanged(int stepCount);
+    }
 
     public StepTracker(Context context, StepListener listener) {
         this.listener = listener;
@@ -20,7 +24,7 @@ public class StepTracker implements SensorEventListener {
 
     public void start() {
         if (stepSensor != null) {
-            sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_UI);
+            sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
@@ -30,14 +34,16 @@ public class StepTracker implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        int totalSteps = (int) event.values[0];
-        listener.onStepChanged(totalSteps);
+        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+            int steps = (int) event.values[0];
+            if (steps > 0) {
+                listener.onStepChanged(steps);
+            } else {
+                listener.onStepChanged(-1); // No steps yet
+            }
+        }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-
-    public interface StepListener {
-        void onStepChanged(int stepCount);
-    }
 }
